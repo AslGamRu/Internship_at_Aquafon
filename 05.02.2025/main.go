@@ -7,19 +7,19 @@ package main
 
 import (
 	"fmt"
+	//"log"
 )
 
 func main() {
 
+	//Заполняем информацию про блюда
 	//=================================================
 	var numDishes int //количество блюд
 
-	fmt.Print("Введите количество блюд: ")
 	fmt.Scan(&numDishes)
 
 	dishes := make([]Dish, numDishes)
 
-	fmt.Println("Введите название блюда, количество друзей и количество ингредиентов: ")
 
 	//итерируюсь по блюдам
 	for i := 0; i < numDishes; i++ {
@@ -28,7 +28,6 @@ func main() {
 
 		fmt.Scan(&name, &numFr, &numIngr)
 		dishes[i].InitDish(name, numFr, numIngr)
-		fmt.Println("Введите название ингредиента, количество и ед. измерения: ")
 
 		//итерируюсь по ингредиентам, входящие в i блюдо
 		for j := 0; j < numIngr; j++ {
@@ -42,15 +41,16 @@ func main() {
 	}
 	//=================================================
 
+	//заполняю информация в каталоге цен
 	//=================================================
 	var priceСatalog PriceСatalog
+	var numIngr int
 
-	fmt.Print("Введите количество ингредиентов в каталоге цен: ")
-	fmt.Scan(&priceСatalog.numIngr)
-	fmt.Println("Введите навзание ингредиентов, стоимость, количество,единица измерения в каталоге цен: ")
+	fmt.Scan(&numIngr)
+	priceСatalog.NumIngr(numIngr)
 
 	//итерируюсь по каталогу цен для ввода нужной информации
-	for i := 0; i < priceСatalog.numIngr; i++ {
+	for i := 0; i < numIngr; i++ {
 		var name, unitMeasur string
 		var price, num float32
 
@@ -59,15 +59,16 @@ func main() {
 	}
 	//=================================================
 
+
+	//заполняю информацию в каталоге еды
 	//=================================================
 	var foodCatalog FoodСatalog
 
-	fmt.Print("Введите количество ингредиентов в каталоге еды: ")
-	fmt.Scan(&foodCatalog.numIngr)
-	fmt.Println("Введите название, количество,ед.измерения и содержание белков, жиров, углеводов и энергетическая ценность ингредиентов: ")
+	fmt.Scan(&numIngr)
+	foodCatalog.NumIngr(numIngr)
 
 	//итерируюсь по каталогу еды для ввода нужной информации
-	for i := 0; i < foodCatalog.numIngr; i++ {
+	for i := 0; i < numIngr; i++ {
 		var name, unitMeasur string
 		var num, prot, fats, carb, ener float32
 
@@ -75,10 +76,29 @@ func main() {
 		fmt.Scan(&prot, &fats, &carb, &ener)
 		foodCatalog.InitFoodCataloge(name, num, unitMeasur, prot, fats, carb, ener)
 	}
-
 	//=================================================
-	fmt.Println(dishes)
-	fmt.Println(priceСatalog)
-	fmt.Println(foodCatalog)
 
+	//вычисляю стоимость всех блюд
+	//=================================================
+	var costAllDishes = CostAllDishes(dishes,&priceСatalog)
+	fmt.Println("Стоимость всех блюд:",costAllDishes)
+	//=================================================
+
+	//Вывод необходимого количества ингредиентов
+	//=================================================
+	fmt.Println("Вывод необходимого количества ингредиентов:")
+	listNumIngr:=priceСatalog.RequiredNumberIngredients(dishes)
+
+	for key,value:=range listNumIngr{
+		fmt.Println(key,value)
+	}
+	//=================================================
+
+	//Вычисляю характеристики блюда
+	//=================================================
+	fmt.Println("Xарактеристики блюда:")
+	for _,dish:=range dishes{
+		prot, fats, carb, ener := dish.CharacteristicsDish(&foodCatalog)
+		fmt.Println(dish.name, prot, fats, carb, ener)
+	}
 }
